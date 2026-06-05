@@ -1,58 +1,222 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# devops-laravel
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <strong>Laboratório pessoal de DevOps com Laravel como aplicação de referência</strong><br>
+  Código versionado, ambiente reproduzível e práticas de entrega contínua — aprendendo na prática.
 </p>
 
-## About Laravel
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-8.3-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP 8.3">
+  <img src="https://img.shields.io/badge/Laravel-13-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel 13">
+  <img src="https://img.shields.io/badge/Livewire-4-FB70A9?style=flat-square" alt="Livewire 4">
+  <img src="https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=flat-square&logo=bootstrap&logoColor=white" alt="Bootstrap 5">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT">
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Sobre o projeto
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**devops-laravel** não é um produto comercial: é um **projeto pessoal** criado para estudar e aplicar conceitos de **DevOps** usando uma aplicação web real como laboratório.
 
-## Learning Laravel
+Em vez de estudar pipelines e containers no vácuo, este repositório oferece um app Laravel com rotas, filas, cache em banco, testes e interface reativa — e serve de base para praticar:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- versionamento e convenções de equipe;
+- setup reproduzível (`composer setup`, `.env.example`);
+- qualidade de código (Pint, PHPUnit);
+- containerização e CI/CD (roadmap);
+- observabilidade e deploy.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**DevOps** como objetivo de aprendizado; **Laravel** como stack da aplicação.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## O que já existe hoje
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+| Área | Status |
+|------|--------|
+| App web Laravel 13 + PHP 8.3 | ✅ |
+| UI com Livewire 4 (componentes em Blade) | ✅ |
+| Layout Bootstrap 5 + Vite | ✅ |
+| SQLite + migrations (users, cache, jobs) | ✅ |
+| Filas e cache via `database` | ✅ |
+| Scripts Composer (`setup`, `dev`, `test`) | ✅ |
+| Regras do Cursor (`.cursor/rules/`) | ✅ |
+| Docker / Compose | 🔜 planejado |
+| GitHub Actions (CI) | 🔜 planejado |
+| Deploy automatizado | 🔜 planejado |
 
-```bash
-composer require laravel/boost --dev
+**Rota principal:** `GET /home` — painel Livewire (contador, formulário reativo, cards).
 
-php artisan boost:install
+---
+
+## Stack técnica
+
+| Camada | Tecnologia |
+|--------|------------|
+| Runtime | PHP 8.3+ |
+| Framework | Laravel 13 |
+| Frontend reativo | Livewire 4.2 |
+| UI | Bootstrap 5 |
+| Build | Vite 8 |
+| Banco (dev padrão) | SQLite |
+| Testes | PHPUnit 12 |
+| Formatação | Laravel Pint |
+| Logs locais | Laravel Pail (`composer dev`) |
+
+---
+
+## Arquitetura
+
+```mermaid
+flowchart TB
+    subgraph browser [Navegador]
+        UI[Bootstrap + Livewire]
+    end
+
+    subgraph laravel [Laravel]
+        R[Rotas web.php]
+        LW[Componentes Livewire]
+        S[Services]
+        M[Models Eloquent]
+        Q[Fila / Cache DB]
+    end
+
+    UI --> R
+    R --> LW
+    LW --> S
+    S --> M
+    LW --> M
+    S --> Q
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+**Convenções** (detalhes em `.cursor/rules/devops_laravel.mdc`):
 
-## Contributing
+- **MVC:** rotas finas; controllers só para HTTP clássico quando necessário.
+- **Livewire:** telas interativas e estado de UI.
+- **Services (`app/Services/`):** regras de negócio — Livewire delega, não concentra lógica pesada.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Estrutura de pastas
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
+devops-laravel/
+├── app/
+│   ├── Http/Controllers/
+│   ├── Models/
+│   ├── Providers/
+│   └── Services/
+├── database/migrations/
+├── resources/views/
+│   ├── layouts/app.blade.php
+│   └── components/
+├── routes/web.php
+├── tests/
+├── .cursor/rules/
+└── composer.json
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Pré-requisitos
 
-## License
+- PHP 8.3+ (extensões do Laravel)
+- [Composer](https://getcomposer.org/)
+- [Node.js](https://nodejs.org/) 18+ e npm
+- Git
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## Instalação
+
+```bash
+git clone <url-do-repositorio> devops-laravel
+cd devops-laravel
+composer setup
+```
+
+Passo a passo:
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate
+npm install
+npm run build
+```
+
+Desenvolvimento (servidor + fila + logs + Vite):
+
+```bash
+composer dev
+```
+
+Acesse: **http://localhost:8000/home**
+
+---
+
+## Comandos úteis
+
+| Comando | Descrição |
+|---------|-----------|
+| `composer dev` | Servidor, queue, Pail e Vite |
+| `composer test` | PHPUnit |
+| `php artisan migrate` | Migrations |
+| `./vendor/bin/pint` | Formata PHP |
+| `npm run dev` | Vite watch |
+| `npm run build` | Build produção |
+
+---
+
+## Variáveis de ambiente
+
+```env
+APP_NAME="devops-laravel"
+APP_URL=http://localhost:8000
+DB_CONNECTION=sqlite
+QUEUE_CONNECTION=database
+CACHE_STORE=database
+SESSION_DRIVER=database
+```
+
+---
+
+## Testes
+
+```bash
+composer test
+```
+
+---
+
+## Roadmap DevOps
+
+- [ ] Dockerfile multi-stage
+- [ ] docker-compose.yml
+- [ ] GitHub Actions (Pint + PHPUnit + build)
+- [ ] Ambientes staging/production documentados
+- [ ] Health check para load balancer
+- [ ] Deploy em VPS ou PaaS
+
+---
+
+## Contribuição
+
+Projeto pessoal; forks e PRs são bem-vindos para estudo. Antes do PR: `composer test`, Pint, e sem `.env` no Git.
+
+---
+
+## Licença
+
+MIT.
+
+---
+
+## Autor
+
+**[Seu Nome]** — aprendizado em DevOps e Laravel.
+
+- GitHub: [@seu-usuario](https://github.com/seu-usuario)
