@@ -217,6 +217,6 @@ MIT.
 
 ## Autor
 
-**[Seu Nome]** — aprendizado em DevOps e Laravel.
+Eduardo Cintas — aprendizado em DevOps e Laravel.
 
-- GitHub: [@seu-usuario](https://github.com/seu-usuario)
+- GitHub: [@eduardocintas8](https://github.com/eduardocintas8)
