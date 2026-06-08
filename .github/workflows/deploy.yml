@@ -1,0 +1,38 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, Linux, X64]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build da imagem
+        run: docker build -t devops-laravel:latest .
+
+      - name: Parar container antigo
+        run: docker rm -f devops-laravel || true
+
+      - name: Subir aplicação
+        run: |
+          docker run -d \
+            --name devops-laravel \
+            --restart unless-stopped \
+            -p 8000:8000 \
+            -e APP_KEY="${{ secrets.APP_KEY }}" \
+            -e APP_ENV="${{ secrets.APP_ENV }}" \
+            -e APP_DEBUG="${{ secrets.APP_DEBUG }}" \
+            -e APP_URL="${{ secrets.APP_URL }}" \
+            -v devops-laravel-storage:/var/www/html/storage \
+            -v devops-laravel-db:/var/www/html/database \
+            devops-laravel:latest
+
+      - name: Migrations
+        run: docker exec devops-laravel php artisan migrate --force
+
+      - name: Limpar imagens antigas
+        run: docker image prune -f
