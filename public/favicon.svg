@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Devops DUDU">
+    <defs>
+        <linearGradient id="rocket" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#6366f1"/>
+            <stop offset="100%" stop-color="#f97316"/>
+        </linearGradient>
+        <linearGradient id="flame" x1="50%" y1="0%" x2="50%" y2="100%">
+            <stop offset="0%" stop-color="#fde047"/>
+            <stop offset="100%" stop-color="#ef4444"/>
+        </linearGradient>
+    </defs>
+    <rect width="32" height="32" rx="7" fill="#0f172a"/>
+    <path d="M16 5.5s-6 8.5-6 14.5c0 2.2 1.8 4 4 5.5 2-1.5 4-3.3 4-5.5 0-6-2-14.5-2-14.5z" fill="url(#rocket)"/>
+    <circle cx="16" cy="16.5" r="2.4" fill="#0f172a" opacity="0.85"/>
+    <path d="M10 19.5 6.5 24 10 21.5z" fill="#fb923c"/>
+    <path d="M22 19.5 25.5 24 22 21.5z" fill="#fb923c"/>
+    <path d="M13.5 24.5q2.5 4.5 5 0l-2.5 1.5z" fill="url(#flame)"/>
+    <circle cx="24" cy="8" r="1.2" fill="#fde047" opacity="0.9"/>
+    <circle cx="8" cy="10" r="0.8" fill="#fde047" opacity="0.7"/>
+</svg>
