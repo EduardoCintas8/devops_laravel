@@ -13,15 +13,19 @@
     <meta name="theme-color" content="#0f172a">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 
+    @stack('styles')
+
     @livewireStyles
 </head>
 
-<body>
+<body class="min-vh-100" style="font-family: 'Instrument Sans', system-ui, sans-serif;">
     {{ $slot }}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -20,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Livewire::addComponent('teste', viewPath: resource_path('views/teste.blade.php'));
+        Livewire::addComponent(
+            'home.index',
+            viewPath: resource_path('views/components/home/⚡index.blade.php'),
+        );
     }
 }

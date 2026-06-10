@@ -17,8 +17,8 @@ Route::get('/favicon.ico', function () {
 //     return view('welcome');
 // });
 Route::get('/', function () {
-    return redirect('/home');
+    return redirect()->route('home');
 });
 
-Route::livewire('/home', 'teste');
+Route::livewire('/home', 'home.index')->name('home');
 
