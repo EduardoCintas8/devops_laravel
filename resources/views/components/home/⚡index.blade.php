@@ -1,343 +1,248 @@
 <?php
 
-use App\Services\WelcomeService;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 new #[Layout('layouts::app')] class extends Component {
-    public string $name = '';
-
-    public string $mood = 'feliz';
-
-    public int $boosts = 0;
-
-    public function mount(WelcomeService $welcomeService): void
-    {
-        $this->mood = array_key_first($welcomeService->availableMoods()) ?? 'feliz';
-    }
-
-    public function selectMood(string $mood, WelcomeService $welcomeService): void
-    {
-        if (! array_key_exists($mood, $welcomeService->availableMoods())) {
-            return;
-        }
-
-        $this->mood = $mood;
-    }
-
-    public function boost(): void
-    {
-        $this->boosts++;
-    }
-
-    public function resetBoost(): void
-    {
-        $this->boosts = 0;
-    }
-
-    #[Computed]
-    public function greeting(): string
-    {
-        return app(WelcomeService::class)->personalizedGreeting($this->name);
-    }
-
-    #[Computed]
-    public function moodMessage(): string
-    {
-        return app(WelcomeService::class)->moodMessage($this->mood);
-    }
-
-    #[Computed]
-    public function moods(): array
-    {
-        return app(WelcomeService::class)->availableMoods();
-    }
-
-    #[Computed]
-    public function boostMessage(): string
-    {
-        return app(WelcomeService::class)->boostMessage($this->boosts);
-    }
+    //
 };
 
 ?>
 
 @push('styles')
     <style>
-        .welcome-page {
+        .dudu-page {
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            --glow-x: 50%;
+            --glow-y: 50%;
+            --trail-x: 50%;
+            --trail-y: 50%;
             position: relative;
             min-height: 100vh;
-            isolation: isolate;
-            background-color: #0f172a;
-        }
-
-        .welcome-page__backdrop {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
             overflow: hidden;
+            isolation: isolate;
+            background-color: #020617;
+            cursor: crosshair;
+        }
+
+        .dudu-page__layer {
+            position: absolute;
+            inset: 0;
             pointer-events: none;
-            background:
-                radial-gradient(circle at top, rgba(99, 102, 241, 0.22), transparent 42%),
-                radial-gradient(circle at 85% 75%, rgba(249, 115, 22, 0.18), transparent 38%),
-                linear-gradient(160deg, #020617 0%, #0f172a 45%, #1e1b4b 100%);
         }
 
-        .welcome-page__content {
-            position: relative;
-            z-index: 1;
-            pointer-events: auto;
-        }
-
-        .welcome-page__hero-title {
-            color: #f8fafc;
-            text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
-        }
-
-        .welcome-page__hero-subtitle {
-            color: #cbd5e1;
-        }
-
-        .welcome-page__grid {
-            position: absolute;
-            inset: 0;
+        .dudu-page__grid {
             background-image:
-                linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
-            background-size: 48px 48px;
-            mask-image: radial-gradient(circle at center, black 35%, transparent 100%);
+                linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+            background-size: 56px 56px;
+            background-position: calc(var(--mouse-x) * 0.02) calc(var(--mouse-y) * 0.02);
+            mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), black 12%, transparent 72%);
+            transition: background-position 0.08s linear;
         }
 
-        .welcome-page__stars {
-            position: absolute;
-            inset: 0;
+        .dudu-page__glow {
+            background: radial-gradient(
+                circle 420px at var(--glow-x) var(--glow-y),
+                rgba(99, 102, 241, 0.28),
+                rgba(249, 115, 22, 0.12) 38%,
+                transparent 70%
+            );
+        }
+
+        .dudu-page__trail {
+            background: radial-gradient(
+                circle 180px at var(--trail-x) var(--trail-y),
+                rgba(56, 189, 248, 0.18),
+                transparent 70%
+            );
+        }
+
+        .dudu-page__stars {
             background-image:
-                radial-gradient(circle, rgba(255, 255, 255, 0.85) 1px, transparent 1px),
-                radial-gradient(circle, rgba(255, 255, 255, 0.55) 1px, transparent 1px),
-                radial-gradient(circle, rgba(255, 255, 255, 0.35) 1px, transparent 1px);
-            background-size: 320px 320px, 460px 460px, 620px 620px;
-            background-position: 0 0, 120px 80px, 60px 200px;
+                radial-gradient(circle, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.45) 1px, transparent 1px);
+            background-size: 280px 280px, 420px 420px;
+            background-position:
+                calc(var(--mouse-x) * -0.08) calc(var(--mouse-y) * -0.08),
+                calc(var(--mouse-x) * 0.05) calc(var(--mouse-y) * 0.05);
             opacity: 0.35;
+            transition: background-position 0.12s linear;
         }
 
-        .welcome-page__orb {
+        .dudu-page__ring {
             position: absolute;
+            width: 28rem;
+            height: 28rem;
+            border: 1px solid rgba(148, 163, 184, 0.14);
             border-radius: 50%;
-            filter: blur(60px);
-            animation: welcome-float 10s ease-in-out infinite;
+            left: var(--glow-x);
+            top: var(--glow-y);
+            transform: translate(-50%, -50%);
+            transition: left 0.18s ease-out, top 0.18s ease-out;
         }
 
-        .welcome-page__orb--indigo {
-            top: -4rem;
-            left: -3rem;
-            width: 18rem;
-            height: 18rem;
-            background: rgba(99, 102, 241, 0.35);
+        .dudu-page__ring--inner {
+            width: 14rem;
+            height: 14rem;
+            left: var(--trail-x);
+            top: var(--trail-y);
+            border-color: rgba(99, 102, 241, 0.35);
+            transition: left 0.32s ease-out, top 0.32s ease-out;
         }
 
-        .welcome-page__orb--orange {
-            right: -5rem;
-            bottom: 2rem;
-            width: 20rem;
-            height: 20rem;
-            background: rgba(249, 115, 22, 0.28);
-            animation-delay: -4s;
+        .dudu-page__content {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
         }
 
-        .welcome-page__badge {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(249, 115, 22, 0.35));
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #f8fafc;
-            letter-spacing: 0.04em;
-        }
-
-        .welcome-page__card {
-            background: #ffffff;
-            color: #1e293b;
-        }
-
-        .welcome-page__card-title {
-            color: #0f172a;
-        }
-
-        .welcome-page__card-muted {
-            color: #64748b;
-        }
-
-        .welcome-page__mood-btn {
-            color: #334155;
-            border-color: #94a3b8;
-            background-color: #ffffff;
-            cursor: pointer;
-            touch-action: manipulation;
+        .dudu-page__title {
+            margin: 0;
+            font-size: clamp(3.5rem, 14vw, 9rem);
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-indent: 0.22em;
+            line-height: 1;
+            text-align: center;
+            filter: drop-shadow(0 0 calc(20px + var(--title-glow, 0) * 30px) rgba(99, 102, 241, 0.45));
+            transform: perspective(800px) rotateX(calc((var(--mouse-y) - 50) * 0.06deg)) rotateY(calc((var(--mouse-x) - 50) * -0.06deg));
+            transition: transform 0.12s ease-out, filter 0.12s ease-out;
             user-select: none;
         }
 
-        .welcome-page__mood-btn:hover,
-        .welcome-page__mood-btn:focus {
-            color: #0f172a;
-            background-color: #f1f5f9;
-            border-color: #64748b;
+        .dudu-page__title span {
+            display: inline-block;
+            color: transparent;
+            background: linear-gradient(
+                120deg,
+                #f8fafc 0%,
+                #a5b4fc 35%,
+                #f97316 70%,
+                #f8fafc 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: dudu-shimmer 6s ease-in-out infinite;
         }
 
-        .welcome-page__mood-btn.is-active {
-            color: #ffffff;
-            border-color: #0d6efd;
-            background-color: #0d6efd;
+        [x-cloak] {
+            display: none !important;
         }
 
-        .welcome-page__alert {
-            background: #f8fafc;
-            color: #334155;
-            border-color: #e2e8f0;
-        }
-
-        .welcome-page__rocket {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .welcome-page__rocket-title {
-            color: #f8fafc;
-        }
-
-        .welcome-page__rocket-text {
-            color: #cbd5e1;
-        }
-
-        .welcome-page__boost {
-            background: linear-gradient(135deg, #6366f1, #f97316);
-            color: #ffffff;
-        }
-
-        .welcome-page__action-btn {
-            cursor: pointer;
-            touch-action: manipulation;
-            user-select: none;
-        }
-
-        .welcome-page__action-btn:disabled {
-            cursor: wait;
-            opacity: 0.7;
-        }
-
-        @keyframes welcome-float {
+        @keyframes dudu-shimmer {
             0%,
             100% {
-                transform: translateY(0);
+                background-position: 0% center;
             }
 
             50% {
-                transform: translateY(18px);
+                background-position: 200% center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .dudu-page__grid,
+            .dudu-page__stars,
+            .dudu-page__ring,
+            .dudu-page__title {
+                transition: none;
+                animation: none;
             }
         }
     </style>
 @endpush
 
-<div class="welcome-page">
-    <div class="welcome-page__backdrop" aria-hidden="true">
-        <div class="welcome-page__grid"></div>
-        <div class="welcome-page__orb welcome-page__orb--indigo"></div>
-        <div class="welcome-page__orb welcome-page__orb--orange"></div>
-        <div class="welcome-page__stars"></div>
+<div
+    class="dudu-page"
+    wire:ignore
+    x-data="duduTechHero()"
+    x-init="init()"
+    @mousemove="onMouseMove($event)"
+    @mouseleave="onMouseLeave()"
+    :style="pageStyle"
+>
+    <div class="dudu-page__layer dudu-page__glow"></div>
+    <div class="dudu-page__layer dudu-page__trail"></div>
+    <div class="dudu-page__layer dudu-page__grid"></div>
+    <div class="dudu-page__layer dudu-page__stars"></div>
+
+    <div class="dudu-page__layer">
+        <div class="dudu-page__ring"></div>
+        <div class="dudu-page__ring dudu-page__ring--inner"></div>
     </div>
 
-    <div class="welcome-page__content container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="welcome-page__hero text-center mb-5">
-                    <span class="badge welcome-page__badge rounded-pill mb-3 px-3 py-2">Devops DUDU 🚀</span>
-                    <h1 class="display-5 fw-bold mb-3 welcome-page__hero-title">{{ $this->greeting }}</h1>
-                    <p class="lead welcome-page__hero-subtitle mb-0">
-                        Uma página simples para começar — personalize sua experiência abaixo.
-                    </p>
-                </div>
-
-                <div class="card welcome-page__card border-0 shadow-lg mb-4">
-                    <div class="card-body p-4">
-                        <h2 class="h5 fw-semibold mb-3 welcome-page__card-title">Como podemos te chamar?</h2>
-                        <label for="name" class="form-label visually-hidden">Seu nome</label>
-                        <input
-                            wire:model.live.debounce.300ms="name"
-                            type="text"
-                            id="name"
-                            class="form-control form-control-lg"
-                            placeholder="Digite seu nome"
-                            autocomplete="name"
-                        >
-                        <p class="welcome-page__card-muted small mt-2 mb-0">
-                            A saudação acima muda em tempo real conforme você digita.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="card welcome-page__card border-0 shadow-lg mb-4">
-                    <div class="card-body p-4">
-                        <h2 class="h5 fw-semibold mb-3 welcome-page__card-title">Como você está hoje?</h2>
-                        <div class="d-flex flex-wrap gap-2 mb-3" wire:key="mood-buttons">
-                            @foreach ($this->moods as $key => $label)
-                                <button
-                                    wire:key="mood-{{ $key }}"
-                                    wire:click="selectMood(@js($key))"
-                                    wire:loading.attr="disabled"
-                                    wire:target="selectMood"
-                                    type="button"
-                                    @class([
-                                        'btn welcome-page__mood-btn',
-                                        'is-active' => $mood === $key,
-                                    ])
-                                >
-                                    {{ $label }}
-                                </button>
-                            @endforeach
-                        </div>
-                        <div class="alert welcome-page__alert border mb-0" role="status" wire:key="mood-message">
-                            {{ $this->moodMessage }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card welcome-page__rocket border-0 shadow-lg">
-                    <div class="card-body p-4 text-center">
-                        <h2 class="h5 fw-semibold mb-2 welcome-page__rocket-title">Impulso do foguete</h2>
-                        <p class="welcome-page__rocket-text mb-4">{{ $this->boostMessage }}</p>
-
-                        <div class="d-flex flex-wrap justify-content-center align-items-center gap-3" wire:key="boost-actions">
-                            <span class="badge welcome-page__boost fs-6 px-3 py-2" wire:key="boost-counter">
-                                Boosts: {{ $boosts }}
-                            </span>
-
-                            <button
-                                wire:key="boost-button"
-                                wire:click="boost"
-                                wire:loading.attr="disabled"
-                                wire:target="boost"
-                                type="button"
-                                class="btn btn-warning btn-lg px-4 welcome-page__action-btn"
-                            >
-                                <span wire:loading.remove wire:target="boost">🚀 Impulsionar</span>
-                                <span wire:loading wire:target="boost">Impulsionando...</span>
-                            </button>
-
-                            <button
-                                wire:key="reset-boost"
-                                wire:click="resetBoost"
-                                wire:loading.attr="disabled"
-                                wire:target="resetBoost"
-                                type="button"
-                                @class([
-                                    'btn btn-outline-light welcome-page__action-btn',
-                                    'd-none' => $boosts === 0,
-                                ])
-                                @disabled($boosts === 0)
-                            >
-                                Reiniciar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="dudu-page__content">
+        <h1 class="dudu-page__title">
+            <span>DUDU TECH</span>
+        </h1>
     </div>
 </div>
+
+@push('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('duduTechHero', () => ({
+                mouseX: 50,
+                mouseY: 50,
+                glowX: 50,
+                glowY: 50,
+                trailX: 50,
+                trailY: 50,
+                titleGlow: 0,
+                frame: null,
+
+                get pageStyle() {
+                    return `
+                        --mouse-x: ${this.mouseX}%;
+                        --mouse-y: ${this.mouseY}%;
+                        --glow-x: ${this.glowX}%;
+                        --glow-y: ${this.glowY}%;
+                        --trail-x: ${this.trailX}%;
+                        --trail-y: ${this.trailY}%;
+                        --title-glow: ${this.titleGlow};
+                    `;
+                },
+
+                init() {
+                    this.animate();
+                },
+
+                onMouseMove(event) {
+                    const rect = this.$el.getBoundingClientRect();
+                    const x = ((event.clientX - rect.left) / rect.width) * 100;
+                    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+                    this.mouseX = Math.max(0, Math.min(100, x));
+                    this.mouseY = Math.max(0, Math.min(100, y));
+                    this.titleGlow = 1 - Math.min(1, Math.hypot(x - 50, y - 50) / 50);
+                },
+
+                onMouseLeave() {
+                    this.titleGlow = 0;
+                },
+
+                animate() {
+                    this.glowX += (this.mouseX - this.glowX) * 0.14;
+                    this.glowY += (this.mouseY - this.glowY) * 0.14;
+                    this.trailX += (this.mouseX - this.trailX) * 0.07;
+                    this.trailY += (this.mouseY - this.trailY) * 0.07;
+
+                    this.frame = requestAnimationFrame(() => this.animate());
+                },
+
+                destroy() {
+                    if (this.frame) {
+                        cancelAnimationFrame(this.frame);
+                    }
+                },
+            }));
+        });
+    </script>
+@endpush
