@@ -87,6 +87,7 @@ new #[Layout('layouts::app')] class extends Component {
         .welcome-page__content {
             position: relative;
             z-index: 1;
+            pointer-events: auto;
         }
 
         .welcome-page__hero-title {
@@ -168,6 +169,9 @@ new #[Layout('layouts::app')] class extends Component {
             color: #334155;
             border-color: #94a3b8;
             background-color: #ffffff;
+            cursor: pointer;
+            touch-action: manipulation;
+            user-select: none;
         }
 
         .welcome-page__mood-btn:hover,
@@ -205,6 +209,17 @@ new #[Layout('layouts::app')] class extends Component {
         .welcome-page__boost {
             background: linear-gradient(135deg, #6366f1, #f97316);
             color: #ffffff;
+        }
+
+        .welcome-page__action-btn {
+            cursor: pointer;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .welcome-page__action-btn:disabled {
+            cursor: wait;
+            opacity: 0.7;
         }
 
         @keyframes welcome-float {
@@ -260,10 +275,13 @@ new #[Layout('layouts::app')] class extends Component {
                 <div class="card welcome-page__card border-0 shadow-lg mb-4">
                     <div class="card-body p-4">
                         <h2 class="h5 fw-semibold mb-3 welcome-page__card-title">Como você está hoje?</h2>
-                        <div class="d-flex flex-wrap gap-2 mb-3">
+                        <div class="d-flex flex-wrap gap-2 mb-3" wire:key="mood-buttons">
                             @foreach ($this->moods as $key => $label)
                                 <button
-                                    wire:click="selectMood('{{ $key }}')"
+                                    wire:key="mood-{{ $key }}"
+                                    wire:click="selectMood(@js($key))"
+                                    wire:loading.attr="disabled"
+                                    wire:target="selectMood"
                                     type="button"
                                     @class([
                                         'btn welcome-page__mood-btn',
@@ -274,7 +292,7 @@ new #[Layout('layouts::app')] class extends Component {
                                 </button>
                             @endforeach
                         </div>
-                        <div class="alert welcome-page__alert border mb-0" role="status">
+                        <div class="alert welcome-page__alert border mb-0" role="status" wire:key="mood-message">
                             {{ $this->moodMessage }}
                         </div>
                     </div>
@@ -285,20 +303,37 @@ new #[Layout('layouts::app')] class extends Component {
                         <h2 class="h5 fw-semibold mb-2 welcome-page__rocket-title">Impulso do foguete</h2>
                         <p class="welcome-page__rocket-text mb-4">{{ $this->boostMessage }}</p>
 
-                        <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
-                            <span class="badge welcome-page__boost fs-6 px-3 py-2">
+                        <div class="d-flex flex-wrap justify-content-center align-items-center gap-3" wire:key="boost-actions">
+                            <span class="badge welcome-page__boost fs-6 px-3 py-2" wire:key="boost-counter">
                                 Boosts: {{ $boosts }}
                             </span>
 
-                            <button wire:click="boost" type="button" class="btn btn-warning btn-lg px-4">
-                                🚀 Impulsionar
+                            <button
+                                wire:key="boost-button"
+                                wire:click="boost"
+                                wire:loading.attr="disabled"
+                                wire:target="boost"
+                                type="button"
+                                class="btn btn-warning btn-lg px-4 welcome-page__action-btn"
+                            >
+                                <span wire:loading.remove wire:target="boost">🚀 Impulsionar</span>
+                                <span wire:loading wire:target="boost">Impulsionando...</span>
                             </button>
 
-                            @if ($boosts > 0)
-                                <button wire:click="resetBoost" type="button" class="btn btn-outline-light">
-                                    Reiniciar
-                                </button>
-                            @endif
+                            <button
+                                wire:key="reset-boost"
+                                wire:click="resetBoost"
+                                wire:loading.attr="disabled"
+                                wire:target="resetBoost"
+                                type="button"
+                                @class([
+                                    'btn btn-outline-light welcome-page__action-btn',
+                                    'd-none' => $boosts === 0,
+                                ])
+                                @disabled($boosts === 0)
+                            >
+                                Reiniciar
+                            </button>
                         </div>
                     </div>
                 </div>

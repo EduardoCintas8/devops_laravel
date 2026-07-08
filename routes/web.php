@@ -16,9 +16,9 @@ Route::get('/favicon.ico', function () {
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
 Route::get('/', function () {
     return redirect()->route('home');
-});
+})->middleware('throttle:5,1');
 
 Route::livewire('/home', 'home.index')->name('home');
-
